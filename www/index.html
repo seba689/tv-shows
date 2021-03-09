@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!--
+        Customize this policy to fit your own app's needs. For more guidance, see:
+            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+        Some notes:
+            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+        <meta name="color-scheme" content="light dark">
+        
+        <!--JQUERY-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="css/index.css">
+        <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+        
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.js"></script>
+        <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.css" />
+        <title>tvshow</title>
+    </head>
+    <body>
+        <div class="main_container">
+            <div class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary" >
+                <div class="container">
+                    <a href="../" class="navbar-brand">FireBase</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"                aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                    </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    
+                </div>
+                <button type="submit" class="btn btn-success" onclick="main.logout()">LogOut</button>
+                </div>
+            </div>
+            
+            <div class="container-fluid px-4" style="margin-top: 80px;">
+                <div class="row">
+                    <div class="col-lg-12">
+                    <div class="page-header text-light">
+                        <h1 id="forms">Formulario</h1>
+                    </div>
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="col-lg-6 col-sm-12">
+                    <div class="bs-component">
+                    <form onsubmit="sendData(event)">
+                        <fieldset>
+                            <legend>TV Shows</legend>
+                            <div class="form-group">
+                                <label class="col-form-label text-light"  for="inputDefault">Nombre</label>
+                                <input type="text" class="form-control" placeholder="Sherlock Holmes" id="txtTitle">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-form-label text-light" for="inputDefault">Plataforma</label>
+                                <input type="text" class="form-control" placeholder="Netflix" id="txtNetwork">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-form-label text-light" for="inputDefault">Temporadas</label>
+                                <input type="number" class="form-control"  id="txtNumberOfSeasons">
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="isCurrent" checked="">
+                                    <label class="custom-control-label text-dark" for="isCurrent">Al aire ?</label>
+                                </div>				  
+                            </div>
+                            
+                            <div class="form-group text-light">
+                                <label for="exampleSelect1">gerenro</label>
+                                <select class="form-control" id="genres">
+                                    <option value="-1">Seleccione</option>
+                                    <option value="terror">Terror</option>
+                                    <option value="cc">Ciencia Ficción</option>
+                                    <option value="accion">Acción</option>
+                                    <option value="comedia">Comedia</option>
+                                </select>
+                            </div>
+                            
+                        <button type="submit" class="btn btn-outline-success">Enviar</button>
+                        </fieldset>
+                    </form>
+                    </div>
+                    </div>
+                    <div class="bg-light my-4 col-sm-12 col-lg-6">
+                        <h3>Colección de Programas:</h3>
+                        <div class="row">
+                            <table id="programas" class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">plataforma</th>
+                                        <th scope="col">n° temp.</th>
+                                        <th scope="col">Al aire</th>
+                                        <th scope="col">genero</th>
+                                        <th scope="col">acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">TV_show</h5>
+                    <h6 id="h6"></h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" class="col bg-light my-1" placeholder="nombre" id="nombre">
+                        <input type="text" class="col bg-light my-1"  placeholder="plataforma" id="plataforma">
+                        <input type="checkbox" class="col bg-light my-1" id="aire" checked="">
+                        <input type="text" class="col bg-light my-1" placeholder="genero" id="genero">
+                        <input type="number" class="col bg-light my-1" placeholder="temporadas" id="temporada">
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="cerrar()">Close</button>
+                    <button type="submit" class="btn btn-primary" onclick="save() ">Save changes</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="js/firebase.js"></script>
+        <script src="js/main.js"></script>
+        <script src="js/index.js"></script>
+    </body>
+</html>
